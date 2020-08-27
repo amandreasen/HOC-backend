@@ -1,5 +1,3 @@
-require('dotenv').config({path: '../config'})
-
 const express = require('express')
 const rootRouter = require('./routers/root')
 const userRouter = require('./routers/users')
