@@ -101,7 +101,7 @@ router.post('/:id', async (req, res) => {
     const query = 'INSERT INTO join_users_groups(user_id, group_id) VALUES ($1,$2);'
 
     await pool.query(query, [user, req.params.id])
-        .then(result => res.send('Joined group successfully!')
+        .then(result => res.send('Joined group successfully!'))
         .catch(e => res.status(400).send(e))
 });
 
