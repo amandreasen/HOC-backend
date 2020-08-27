@@ -11,11 +11,6 @@ router.get('/', (req, res) => {
             return res.status(400).send(e)
         } 
 
-        data = result.rows
-        if (data.length === 0){
-            return res.s
-tatus(404).send('No groups found!')
-        }
         res.send(result.rows)
     })
 });
@@ -82,31 +77,41 @@ router.patch('/:id', (req, res) => {
 });
 
 //add tags to group (tags is an array of tag_ids)
-router.post('/:id', async (req, res) => {
+router.post('/:id/tags', async (req, res) => {
     const tags = req.body.tags
     const query = 'INSERT INTO join_groups_tags(group_id, tag_id) VALUES ($1,$2);'
 
     for(var i=0; i <tags.length; i++){
         await pool.query(query,[req.params.id,tags[i]])
             .then()
-            .catch(e => res.status(400).send(e))
+            .catch(e => {
+                if (e.code === "23503"){
+                    return res.status(404).send('Group or tag does not exist.');
+                }
+                return res.status(400).send(e);
+            })
     }
 
     res.send('Tags updated successfully!');
 });
 
 //add user to group
-router.post('/:id', async (req, res) => {
+router.post('/:id/users', async (req, res) => {
     const user = req.body.user_id
     const query = 'INSERT INTO join_users_groups(user_id, group_id) VALUES ($1,$2);'
 
     await pool.query(query, [user, req.params.id])
         .then(result => res.send('Joined group successfully!'))
-        .catch(e => res.status(400).send(e))
+        .catch(e => {
+            if(e.code === "23503"){
+                return res.status(404).send('Group or user does not exist.');
+        }
+        return res.status(400).send(e);
+    });
 });
 
 //get member users in a group
-router.get('/:id', async (req, res) => {
+router.get('/:id/users', async (req, res) => {
     query = `SELECT u.name, u.netid, u.email, u.timezone
     FROM users u, join_users_groups j
     WHERE j.group_id=${req.params.id} AND j.user_id=u.user_id;`
@@ -116,4 +121,4 @@ router.get('/:id', async (req, res) => {
         .catch(e => res.status(400).send(e))
 });
 
-module.exports = router
+module.exports = router;

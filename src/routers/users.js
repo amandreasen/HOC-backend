@@ -10,11 +10,7 @@ router.get('/', (req, res) => {
             return res.status(e)
         }
 
-        data = result.rows
-        if (data.length === 0){
-            return res.send('No users found!')
-        }
-        res.send(data)
+        res.send(result.rows)
     })
 });
 
