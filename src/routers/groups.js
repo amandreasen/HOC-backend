@@ -95,4 +95,25 @@ router.post('/:id', async (req, res) => {
     res.send('Tags updated successfully!');
 });
 
+//add user to group
+router.post('/:id', async (req, res) => {
+    const user = req.body.user_id
+    const query = 'INSERT INTO join_users_groups(user_id, group_id) VALUES ($1,$2);'
+
+    await pool.query(query, [user, req.params.id])
+        .then(result => res.send('Joined group successfully!')
+        .catch(e => res.status(400).send(e))
+});
+
+//get member users in a group
+router.get('/:id', async (req, res) => {
+    query = `SELECT u.name, u.netid, u.email, u.timezone
+    FROM users u, join_users_groups j
+    WHERE j.group_id=${req.params.id} AND j.user_id=u.user_id;`
+
+    await pool.query(query)
+        .then(result => res.send(result.rows))
+        .catch(e => res.status(400).send(e))
+});
+
 module.exports = router
