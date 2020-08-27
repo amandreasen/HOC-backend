@@ -26,14 +26,26 @@ router.get('/:id', (req, res) => {
             return res.status(400).send(e)
         }
         
-        data.length = result.rows 
+        data = result.rows 
         if(data.length === 0){
             return res.status(404).send('User not found!')
         }
-        
-        res.send(result.rows)
+
+        res.send(data)
     })
 });
+
+//get all groups that a user owns
+router.get('/:id/groups', (req, res) => {
+    query = `SELECT * FROM groups WHERE owner=${req.params.id};`
+    pool.query(query, (e, result) => {
+        if(e){
+            return res.status(400).send(e)
+        }
+
+        res.send(result.rows)
+    })
+})
 
 //create new user
 router.post('/', (req, res) => {
@@ -79,6 +91,10 @@ router.patch('/:id', (req, res) => {
     pool.query(query, (e, result) => {
         if(e){
             return res.status(400).send(e);
+        }
+
+        if(result.rowCount === 0){
+            return res.status(404).send('User not found!');
         }
         
         res.send('Timezone updated successfully!')
