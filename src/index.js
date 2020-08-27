@@ -1,4 +1,4 @@
-require('dotenv').config()
+require('dotenv').config({path: '../config'})
 
 const express = require('express')
 const rootRouter = require('./routers/root')
@@ -7,7 +7,7 @@ const groupRouter = require('./routers/groups')
 const searchRouter = require('./routers/search');
 
 const app = express()
-const port = 3000
+const port = process.env.PORT
 
 app.use(express.json())
 app.use('/', rootRouter)
