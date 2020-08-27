@@ -25,6 +25,12 @@ router.get('/:id', (req, res) => {
         if(e){
             return res.status(400).send(e)
         }
+        
+        data.length = result.rows 
+        if(data.length === 0){
+            return res.status(404).send('User not found!')
+        }
+        
         res.send(result.rows)
     })
 });
@@ -57,6 +63,11 @@ router.delete('/:id', (req, res) => {
         if(e){
             return res.status(400).send(e)
         }
+
+        if(result.rowCount === 0){
+            return res.status(404).send('User not found!')
+        }
+
         res.send('User deleted succesfully!')
     })
 });
@@ -67,9 +78,9 @@ router.patch('/:id', (req, res) => {
     query=`UPDATE users SET timezone=${req.body.timezone} WHERE user_id=${req.params.id};`
     pool.query(query, (e, result) => {
         if(e){
-            res.status(400).send(e);
+            return res.status(400).send(e);
         }
-
+        
         res.send('Timezone updated successfully!')
     })
 });
