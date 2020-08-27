@@ -13,9 +13,9 @@ router.get('/', (req, res) => {
 
         data = result.rows
         if (data.length === 0){
-            return res.status(404).send('No groups found!')
+            return res.s
+tatus(404).send('No groups found!')
         }
-
         res.send(result.rows)
     })
 });
