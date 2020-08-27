@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const express = require('express')
+const rootRouter = require('./routers/root')
 const userRouter = require('./routers/users')
 const groupRouter = require('./routers/groups')
 
@@ -8,6 +9,7 @@ const app = express()
 const port = 3000
 
 app.use(express.json())
+app.use('/', rootRouter)
 app.use('/users', userRouter)
 app.use('/groups', groupRouter)
 
