@@ -22,7 +22,7 @@ router.get('/', (req, res) => {
 
 //get group by group_id
 router.get('/:id', (req, res) => {
-    query = `SELECT * FROM groups WHERE group_id=${req.params.id}`;
+    const query = `SELECT * FROM groups WHERE group_id=${req.params.id}`;
     pool.query(query, (e, result) => {
         
         if(e){
@@ -40,8 +40,8 @@ router.get('/:id', (req, res) => {
 
 //create new group
 router.post('/', (req, res) => {
-    params = Object.values(req.body);
-    query = 'INSERT INTO groups(name,description,public,open,owner) VALUES ($1,$2,$3,$4,$5);'
+    const params = Object.values(req.body);
+    const query = 'INSERT INTO groups(name,description,public,open,owner) VALUES ($1,$2,$3,$4,$5);'
     pool.query(query, params, (e, result) => {
 
         if(e){
@@ -54,7 +54,7 @@ router.post('/', (req, res) => {
 
 //delete group by group_id
 router.delete('/:id', (req, res) => {
-    query = `DELETE FROM groups WHERE group_id=${req.params.id};`
+    const query = `DELETE FROM groups WHERE group_id=${req.params.id};`
     pool.query(query, (e, result) => {
         if(e){
             return res.status(400).send(e)
@@ -70,8 +70,8 @@ router.delete('/:id', (req, res) => {
 
 //update group information by group_id
 router.patch('/:id', (req, res) => {
-    params = Object.values(req.body);
-    query = `UPDATE groups SET name=$1, description=$2, public=$3, open=$4 WHERE group_id=${req.params.id};`
+    const params = Object.values(req.body);
+    const query = `UPDATE groups SET name=$1, description=$2, public=$3, open=$4 WHERE group_id=${req.params.id};`
     pool.query(query,params, (e, result) => {
         if(e){
             return res.status(400).send(e)
@@ -79,6 +79,20 @@ router.patch('/:id', (req, res) => {
 
         res.send('Group information updated successfully!')
     })
+});
+
+//add tags to group (tags is an array of tag_ids)
+router.post('/:id', async (req, res) => {
+    const tags = req.body.tags
+    const query = 'INSERT INTO join_groups_tags(group_id, tag_id) VALUES ($1,$2);'
+
+    for(var i=0; i <tags.length; i++){
+        await pool.query(query,[req.params.id,tags[i]])
+            .then()
+            .catch(e => res.status(400).send(e))
+    }
+
+    res.send('Tags updated successfully!');
 });
 
 
