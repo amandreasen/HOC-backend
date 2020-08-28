@@ -36,27 +36,17 @@ router.get('/:id', (req, res) => {
 //create new group
 router.post('/', async (req, res) => {
     const params = Object.values(req.body);
+    const full_text = params[0] + ' ' + params[1];
+    params.push(full_text)
 
     const query = `INSERT INTO 
-    groups(group_name,description,class_code,meeting_format,days,public,owner) 
-    VALUES ($1,$2,$3,$4,$5,$6,$7);`
+    groups(group_name,description,class_code,meeting_format,days,public,owner,text_vector) 
+    VALUES ($1,$2,$3,$4,$5,$6,$7,to_tsvector($8));`
 
     await pool.query(query, params)
         .then(result => res.status(201).send('Group created successfully!'))
         .catch(e => res.status(400).send(e))
 });
-
-// router.post('/', async (req, res) => {
-//     const params = Object.values(req.body);
-
-//     const query = `INSERT INTO 
-//     groups(group_name,description,text_vector,class_code,meeting_format,days,public,owner) 
-//     VALUES ($1,$2,to_tsvector(${params[0] + params[1]}),$3,$4,$5,$6,$7,$8);`
-    
-//     await pool.query(query, params)
-//         .then(result => res.status(201).send('Group created successfully!'))
-//         .catch(e => res.status(400).send(e))
-// });
 
 //delete group by group_id
 router.delete('/:id', (req, res) => {
