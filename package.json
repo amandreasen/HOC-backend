@@ -6,12 +6,13 @@
     "start": "node src/index.js",
     "dev": "env-cmd -f ./config/dev.env nodemon src/index.js"
   },
-  "engines":{
+  "engines": {
     "node": "14.7.0"
   },
   "license": "MIT",
   "dependencies": {
     "express": "^4.17.1",
+    "google-auth-library": "^6.0.6",
     "nodemon": "^2.0.4",
     "pg": "^8.3.2"
   },

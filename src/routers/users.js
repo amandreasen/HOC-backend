@@ -47,7 +47,7 @@ router.get('/:id/groups', (req, res) => {
 router.post('/', (req, res) => {
     try{
         params = Object.values(req.body)
-        query = 'INSERT INTO users(name, netid, email, timezone) VALUES($1,$2,$3,$4);'
+        query = 'INSERT INTO users(name, email, password, timezone) VALUES($1,$2,$3,$4);'
         pool.query(query, params, (e, result) => {
             if(e){
                 if(e.code === "23505"){
@@ -96,6 +96,11 @@ router.patch('/:id', (req, res) => {
         res.send('Timezone updated successfully!')
     })
 });
+
+const UTCoffset = (time) => {
+
+    console.log('test')
+}
 
 
 module.exports = router
