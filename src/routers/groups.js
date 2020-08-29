@@ -67,7 +67,10 @@ router.delete('/:id', (req, res) => {
 //update group information by group_id
 router.patch('/:id', (req, res) => {
     const params = Object.values(req.body);
-    const query = `UPDATE groups SET group_name=$1, description=$2, meeting_format=$3, time=$4, days=$5, class_code=$string
+    // const new_text = params[0] + ' ' + params[1];
+    // params.push(new_text);
+
+    const query = `UPDATE groups SET group_name=$1, description=$2, class_code=$3, meeting_format=$4, time=$5, days=$6, public=$7
      WHERE group_id=${req.params.id};`
     pool.query(query,params, (e, result) => {
         if(e){
@@ -76,25 +79,6 @@ router.patch('/:id', (req, res) => {
 
         res.send('Group information updated successfully!')
     })
-});
-
-//add tags to group (tags is an array of tag_ids)
-router.post('/:id/tags', async (req, res) => {
-    const tags = req.body.tags
-    const query = 'INSERT INTO join_groups_tags(group_id, tag_id) VALUES ($1,$2);'
-
-    for(var i=0; i <tags.length; i++){
-        await pool.query(query,[req.params.id,tags[i]])
-            .then()
-            .catch(e => {
-                if (e.code === "23503"){
-                    return res.status(404).send('Group or tag does not exist.');
-                }
-                return res.status(400).send(e);
-            })
-    }
-
-    res.send('Tags updated successfully!');
 });
 
 //add user to group
@@ -114,7 +98,7 @@ router.post('/:id/users', async (req, res) => {
 
 //get member users in a group
 router.get('/:id/users', async (req, res) => {
-    query = `SELECT u.name, u.netid, u.email, u.timezone
+    query = `SELECT u.name, u.email, u.timezone
     FROM users u, join_users_groups j
     WHERE j.group_id=${req.params.id} AND j.user_id=u.user_id;`
 
@@ -124,3 +108,7 @@ router.get('/:id/users', async (req, res) => {
 });
 
 module.exports = router;
+
+router.get('/:id/meetings', async (req, res) => {
+
+})
