@@ -67,10 +67,10 @@ router.delete('/:id', (req, res) => {
 //update group information by group_id
 router.patch('/:id', (req, res) => {
     const params = Object.values(req.body);
-    // const new_text = params[0] + ' ' + params[1];
-    // params.push(new_text);
+    const new_text = params[0] + ' ' + params[1];
+    params.push(new_text);
 
-    const query = `UPDATE groups SET group_name=$1, description=$2, class_code=$3, meeting_format=$4, time=$5, days=$6, public=$7
+    const query = `UPDATE groups SET group_name=$1, description=$2, class_code=$3, meeting_format=$4, time=$5, days=$6, public=$7, text_vector=to_tsvector($8)
      WHERE group_id=${req.params.id};`
     pool.query(query,params, (e, result) => {
         if(e){
@@ -107,8 +107,22 @@ router.get('/:id/users', async (req, res) => {
         .catch(e => res.status(400).send(e))
 });
 
-module.exports = router;
-
+//get all meetings for a group
 router.get('/:id/meetings', async (req, res) => {
-
+    query = `SELECT * FROM meetings WHERE group_id=${req.params.id};`
+    await pool.query(query)
+        .then(result => res.send(result.rows))
+        .catch(e => res.status(400).send(e))
 })
+
+//create a meeting for a group
+router.post('/:id/meetings', async(req, res) => {
+    const params = Object.values(req.body);
+    query = `INSERT INTO meetings(meeting_time,link,group_id) VALUES ($1,$2,${req.params.id});`
+
+    await pool.query(query, params)
+        .then(result => res.send('Meeting added succesfully!'))
+        .catch(e => res.status(400).send(e))
+})
+
+module.exports = router;
